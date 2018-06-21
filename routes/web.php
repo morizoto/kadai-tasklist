@@ -15,9 +15,9 @@ Route::get('signup', 'Auth\RegisterController@showRegistrationForm')->name('sign
 Route::post('signup', 'Auth\RegisterController@register')->name('signup.post');               //signup
 
 
-Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
-Route::post('login', 'Auth\LoginController@login')->name('login.post');
-Route::get('logout', 'Auth\LoginController@logout')->name('logout.get');
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');      //login
+Route::post('login', 'Auth\LoginController@login')->name('login.post');        //login
+Route::get('logout', 'Auth\LoginController@logout')->name('logout.get');       //login
 
 
 Route::get('/', 'TasksController@index');
@@ -25,5 +25,5 @@ Route::get('/', 'TasksController@index');
 Route::resource('tasks', 'TasksController');
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::resource('users', 'UsersController', ['only' => ['index', 'show']]);
+    Route::resource('tasks', 'TasksController', ['only' => ['index', 'show']]);
 });

@@ -13,17 +13,20 @@ class TasksController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+     
     public function index()
     {
+        
         $data = [];
         if (\Auth::check()) {
             $user = \Auth::user();
             $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
-
+            
             $data = [
                 'user' => $user,
                 'tasks' => $tasks,
             ];
+            
             $data += $this->counts($user);
             return view('tasks.index', $data);
         }else {
@@ -61,6 +64,7 @@ class TasksController extends Controller
         $task = new Task;
         $task->content = $request->content;
         $task->status = $request->status;
+        $task->user_id = \Auth::user()->id;
         $task->save();
         
         return redirect('/');
@@ -75,12 +79,20 @@ class TasksController extends Controller
      */
     public function show($id)
     {
-        $task = Task::find($id);
-        
-        return view ('tasks.show', [
-            'task' => $task,
-            ]);
-    }
+        $data = [];
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            $tasks = $user->tasks();
+            $task = Task::find($id);
+            if ($user->id != $task->user_id){
+                return redirect('/');
+            }
+            $data += $this->counts($user);
+            return view('tasks.show', ['task' => $task]);
+        }else {
+            return view('welcome');
+        }
+    }    
 
     /**
      * Show the form for editing the specified resource.
@@ -90,13 +102,29 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-        $task = Task::find($id);
         
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+        
+         $data = [];
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            $tasks = $user->tasks();
+            $task = Task::find($id);
+            if ($user->id != $task->user_id) {
+            return redirect('/');            
+            }
+    
+            $data += $this->counts($user);
+            return view('tasks.edit', ['task' => $task]);
+        }else {
+            return view('welcome');
+        }
     }
-
+        
+        
+        
+        
+        
+     
     /**
      * Update the specified resource in storage.
      *
